@@ -1,0 +1,407 @@
+{
+  "familyName": "Keluarga Yusof",
+  "headId": "p001",
+  "people": [
+    {
+      "id": "p001",
+      "name": "Ahmad bin Yusof",
+      "gender": "male",
+      "status": "dead",
+      "birthYear": 1921,
+      "deathYear": 1994,
+      "position": {
+        "x": 0,
+        "y": 330
+      }
+    },
+    {
+      "id": "p002",
+      "name": "Fatimah binti Hassan",
+      "gender": "female",
+      "status": "dead",
+      "birthYear": 1925,
+      "deathYear": 2001,
+      "position": {
+        "x": 180,
+        "y": 330
+      }
+    },
+    {
+      "id": "p003",
+      "name": "Ismail bin Ahmad",
+      "gender": "male",
+      "status": "dead",
+      "birthYear": 1948,
+      "deathYear": 2019,
+      "position": {
+        "x": -450,
+        "y": 660
+      }
+    },
+    {
+      "id": "p004",
+      "name": "Zainab binti Ahmad",
+      "gender": "female",
+      "status": "alive",
+      "birthYear": 1951,
+      "position": {
+        "x": 270,
+        "y": 660
+      }
+    },
+    {
+      "id": "p005",
+      "name": "Rahim bin Ahmad",
+      "gender": "male",
+      "status": "dead",
+      "birthYear": 1953,
+      "deathYear": 2009,
+      "position": {
+        "x": 630,
+        "y": 660
+      }
+    },
+    {
+      "id": "p006",
+      "name": "Mariam binti Osman",
+      "gender": "female",
+      "status": "alive",
+      "birthYear": 1952,
+      "position": {
+        "x": -270,
+        "y": 660
+      }
+    },
+    {
+      "id": "p007",
+      "name": "Nurul binti Ismail",
+      "gender": "female",
+      "status": "alive",
+      "birthYear": 1975,
+      "position": {
+        "x": -450,
+        "y": 990
+      }
+    },
+    {
+      "id": "p008",
+      "name": "Faisal bin Ismail",
+      "gender": "male",
+      "status": "alive",
+      "birthYear": 1978,
+      "position": {
+        "x": -270,
+        "y": 990
+      }
+    },
+    {
+      "id": "p009",
+      "name": "Tan Wei Ming",
+      "gender": "male",
+      "status": "alive",
+      "birthYear": 1949,
+      "position": {
+        "x": 90,
+        "y": 660
+      }
+    },
+    {
+      "id": "p010",
+      "name": "Aisha Tan",
+      "gender": "female",
+      "status": "alive",
+      "birthYear": 1980,
+      "position": {
+        "x": 180,
+        "y": 990
+      }
+    },
+    {
+      "id": "p011",
+      "name": "Halimah binti Salleh",
+      "gender": "female",
+      "status": "dead",
+      "birthYear": 1957,
+      "deathYear": 2015,
+      "position": {
+        "x": 450,
+        "y": 660
+      }
+    },
+    {
+      "id": "p012",
+      "name": "Yusof bin Rahim",
+      "gender": "male",
+      "status": "alive",
+      "birthYear": 1985,
+      "position": {
+        "x": 540,
+        "y": 990
+      }
+    },
+    {
+      "id": "p013",
+      "name": "Siti binti Rahim",
+      "gender": "female",
+      "status": "alive",
+      "birthYear": 1990,
+      "position": {
+        "x": 720,
+        "y": 990
+      }
+    },
+    {
+      "id": "p014",
+      "name": "Unknown",
+      "status": "dead",
+      "unknown": true,
+      "position": {
+        "x": 810,
+        "y": 660
+      }
+    },
+    {
+      "id": "p015",
+      "name": "Daniel Lim",
+      "gender": "male",
+      "status": "alive",
+      "birthYear": 1974,
+      "position": {
+        "x": -630,
+        "y": 990
+      }
+    },
+    {
+      "id": "p016",
+      "name": "Sofia Lim",
+      "gender": "female",
+      "status": "alive",
+      "birthYear": 2004,
+      "position": {
+        "x": -630,
+        "y": 1320
+      }
+    },
+    {
+      "id": "p017",
+      "name": "Adam Lim",
+      "gender": "male",
+      "status": "alive",
+      "birthYear": 2007,
+      "position": {
+        "x": -450,
+        "y": 1320
+      }
+    },
+    {
+      "id": "p018",
+      "name": "Lina binti Karim",
+      "gender": "female",
+      "status": "alive",
+      "birthYear": 1981,
+      "position": {
+        "x": -90,
+        "y": 990
+      }
+    },
+    {
+      "id": "p019",
+      "name": "Iman binti Faisal",
+      "gender": "female",
+      "status": "alive",
+      "birthYear": 2012,
+      "position": {
+        "x": -180,
+        "y": 1320
+      }
+    },
+    {
+      "id": "p020",
+      "name": "Hassan bin Yusof",
+      "gender": "male",
+      "status": "dead",
+      "birthYear": 1918,
+      "deathYear": 1979,
+      "position": {
+        "x": 90,
+        "y": 0
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "id": "m1",
+      "from": "p001",
+      "to": "p002",
+      "type": "marriage"
+    },
+    {
+      "id": "m2",
+      "from": "p003",
+      "to": "p006",
+      "type": "marriage"
+    },
+    {
+      "id": "m3",
+      "from": "p004",
+      "to": "p009",
+      "type": "marriage"
+    },
+    {
+      "id": "m4",
+      "from": "p005",
+      "to": "p011",
+      "type": "marriage"
+    },
+    {
+      "id": "m5",
+      "from": "p007",
+      "to": "p015",
+      "type": "marriage"
+    },
+    {
+      "id": "m6",
+      "from": "p008",
+      "to": "p018",
+      "type": "marriage"
+    },
+    {
+      "id": "r1",
+      "from": "p001",
+      "to": "p003",
+      "type": "parent"
+    },
+    {
+      "id": "r2",
+      "from": "p002",
+      "to": "p003",
+      "type": "parent"
+    },
+    {
+      "id": "r3",
+      "from": "p001",
+      "to": "p004",
+      "type": "parent"
+    },
+    {
+      "id": "r4",
+      "from": "p002",
+      "to": "p004",
+      "type": "parent"
+    },
+    {
+      "id": "r5",
+      "from": "p001",
+      "to": "p005",
+      "type": "parent"
+    },
+    {
+      "id": "r6",
+      "from": "p002",
+      "to": "p005",
+      "type": "parent"
+    },
+    {
+      "id": "r7",
+      "from": "p003",
+      "to": "p007",
+      "type": "parent"
+    },
+    {
+      "id": "r8",
+      "from": "p006",
+      "to": "p007",
+      "type": "parent"
+    },
+    {
+      "id": "r9",
+      "from": "p003",
+      "to": "p008",
+      "type": "parent"
+    },
+    {
+      "id": "r10",
+      "from": "p006",
+      "to": "p008",
+      "type": "parent"
+    },
+    {
+      "id": "r11",
+      "from": "p004",
+      "to": "p010",
+      "type": "parent"
+    },
+    {
+      "id": "r12",
+      "from": "p009",
+      "to": "p010",
+      "type": "parent"
+    },
+    {
+      "id": "r13",
+      "from": "p005",
+      "to": "p012",
+      "type": "parent"
+    },
+    {
+      "id": "r14",
+      "from": "p011",
+      "to": "p012",
+      "type": "parent"
+    },
+    {
+      "id": "r15",
+      "from": "p005",
+      "to": "p013",
+      "type": "parent"
+    },
+    {
+      "id": "r16",
+      "from": "p014",
+      "to": "p013",
+      "type": "parent"
+    },
+    {
+      "id": "r17",
+      "from": "p007",
+      "to": "p016",
+      "type": "parent"
+    },
+    {
+      "id": "r18",
+      "from": "p015",
+      "to": "p016",
+      "type": "parent"
+    },
+    {
+      "id": "r19",
+      "from": "p007",
+      "to": "p017",
+      "type": "parent"
+    },
+    {
+      "id": "r20",
+      "from": "p015",
+      "to": "p017",
+      "type": "parent"
+    },
+    {
+      "id": "r21",
+      "from": "p008",
+      "to": "p019",
+      "type": "parent"
+    },
+    {
+      "id": "r22",
+      "from": "p018",
+      "to": "p019",
+      "type": "parent"
+    },
+    {
+      "id": "r23",
+      "from": "p020",
+      "to": "p001",
+      "type": "parent"
+    }
+  ]
+}

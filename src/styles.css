@@ -1,0 +1,403 @@
+@font-face {
+  font-family: 'Source Serif 4';
+  src: url('/fonts/source-serif-4.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+
+:root {
+  --ground: #e8eae6;
+  --card: #fafaf8;
+  --ink: #2e3a36;
+  --ink-muted: #5f776f;
+  --line: #7c8981;
+  --disc-blank: #b4bcb6;
+
+  --card-w: 140px;
+  --card-h: 160px;
+
+  font-family: 'Source Serif 4', Georgia, serif;
+  color: var(--ink);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--ground);
+  overscroll-behavior: none;
+}
+
+.app {
+  width: 100vw;
+  height: 100dvh;
+}
+
+/* ─── card ─────────────────────────────────────────────────────────── */
+
+.card {
+  width: var(--card-w);
+  height: var(--card-h);
+  margin: 0;
+  padding: 16px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.card--unknown {
+  border-style: dashed;
+}
+
+.card--dead .portrait {
+  filter: grayscale(1);
+  opacity: 0.9;
+}
+
+.card--dead .card__name {
+  color: var(--ink-muted);
+}
+
+.card--found {
+  outline: 2px solid var(--ink);
+  outline-offset: -1px;
+  animation: found-fade 0.6s 2s forwards;
+}
+
+@keyframes found-fade {
+  to {
+    outline-color: transparent;
+  }
+}
+
+.portrait {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  flex: none;
+}
+
+.portrait--blank {
+  background: var(--disc-blank);
+  color: var(--ink-muted);
+}
+
+.card__body {
+  text-align: center;
+  line-height: 1.25;
+}
+
+.card__name {
+  font-size: 15px;
+}
+
+.card--unknown .card__name {
+  font-style: italic;
+  color: var(--ink-muted);
+}
+
+.card__dates {
+  font-size: 12px;
+  color: var(--ink-muted);
+  margin-top: 4px;
+}
+
+/* the 16px disc shown at `far`, standing in for the whole card */
+.card__disc {
+  display: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--line);
+}
+
+.far .card {
+  border-color: transparent;
+  background: none;
+  padding: 0;
+  justify-content: center;
+}
+
+.far .card__disc {
+  display: block;
+}
+
+.far .portrait,
+.far .card__body {
+  display: none;
+}
+
+/* ─── connectors ───────────────────────────────────────────────────── */
+
+.union {
+  width: 1px;
+  height: 1px;
+}
+
+.react-flow__edge-path {
+  stroke: var(--line);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.react-flow__handle {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.react-flow__node-union {
+  pointer-events: none;
+}
+
+.react-flow__attribution {
+  display: none;
+}
+
+/* ─── chrome ───────────────────────────────────────────────────────── */
+
+.family-name {
+  position: fixed;
+  top: 12px;
+  left: 10px;
+  margin: 0;
+  padding: 6px 10px;
+  font-size: 20px;
+  font-weight: 400;
+  /* the ground colour: invisible on bare canvas, legible over a card */
+  background: var(--ground);
+  border-radius: 10px;
+  z-index: 7;
+  pointer-events: none;
+}
+
+.panel {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+button {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: var(--ground);
+}
+
+button[disabled] {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* ─── search ───────────────────────────────────────────────────────── */
+
+.search {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 5;
+  width: 260px;
+}
+
+.search input {
+  width: 100%;
+  padding: 9px 12px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.search ul {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 4px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.search li button {
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  padding: 7px 9px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.search li button:hover {
+  background: var(--ground);
+}
+
+.search .dates {
+  color: var(--ink-muted);
+  font-size: 12px;
+  flex: none;
+}
+
+/* ─── list view ────────────────────────────────────────────────────── */
+
+.list-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 6;
+}
+
+.list-view {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  overflow-y: auto;
+  background: var(--ground);
+  padding: 72px 20px 40px;
+}
+
+.list-view ol {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px;
+  max-width: 640px;
+}
+
+.list-view h2 {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--ink-muted);
+  margin: 0 0 8px;
+  max-width: 640px;
+}
+
+.list-view li {
+  padding: 5px 0;
+  display: flex;
+  gap: 10px;
+}
+
+.list-view .dates {
+  color: var(--ink-muted);
+  font-size: 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ─── admin ────────────────────────────────────────────────────────── */
+
+.toolbar {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  translate: -50% 0;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+}
+
+.toolbar__status {
+  color: var(--ink-muted);
+  margin-right: 6px;
+}
+
+.hint {
+  position: fixed;
+  top: 76px;
+  left: 50%;
+  translate: -50% 0;
+  z-index: 6;
+  padding: 7px 12px;
+  color: var(--ink-muted);
+  /* it floats over the canvas while picking: it must never eat a node click */
+  pointer-events: none;
+}
+
+.edit {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 6;
+  width: 260px;
+  padding: 20px;
+  border-radius: 0;
+  border-width: 0 0 0 1px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+}
+
+.edit h2 {
+  font-size: 15px;
+  font-weight: 400;
+  margin: 0 0 4px;
+}
+
+.edit label {
+  display: grid;
+  grid-template-columns: 62px 1fr;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink-muted);
+}
+
+.edit label.check {
+  grid-template-columns: auto 1fr;
+}
+
+.edit input,
+.edit select {
+  width: 100%;
+  padding: 6px 8px;
+  background: var(--ground);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.edit input[type='file'] {
+  border: none;
+  background: none;
+  padding: 0;
+}
+
+.edit input[type='checkbox'] {
+  width: auto;
+}
+
+.edit__actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 16px;
+}
