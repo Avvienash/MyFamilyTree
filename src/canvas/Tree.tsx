@@ -96,23 +96,35 @@ type Props = {
 export function Tree({ family, admin, foundId, onMove, onSelect }: Props) {
   const { nodes, edges } = useMemo(() => build(family, foundId), [family, foundId]);
   const level = useDetailLevel();
-  const { setCenter, fitView } = useReactFlow();
+  const { setCenter, fitBounds } = useReactFlow();
   const introDone = useRef(false);
 
-  // fitView needs React Flow to have measured at least one node; until then it
-  // silently does nothing. Waiting on this is what makes the intro reliable.
-  const measured = useStore((s) => {
-    for (const node of s.nodeLookup.values()) if (node.measured?.width) return true;
-    return false;
-  });
+  // fitView derives its bounds from *measured* nodes, so it quietly fits to
+  // whatever subset happens to be on screen. Positions and card size are known
+  // up front, so the real bounds need no measurement at all.
+  const bounds = useMemo(() => {
+    const placed = family.people.map(at);
+    if (!placed.length) return null;
+    const x = Math.min(...placed.map((p) => p.x));
+    const y = Math.min(...placed.map((p) => p.y));
+    return {
+      x,
+      y,
+      width: Math.max(...placed.map((p) => p.x)) + CARD_W - x,
+      height: Math.max(...placed.map((p) => p.y)) + CARD_H - y,
+    };
+  }, [family]);
+
+  // the container still has to be measured before a fit means anything
+  const ready = useStore((s) => s.width > 0 && s.height > 0);
 
   // one orchestrated moment on load: hold on the head, then pull back to fit
   useEffect(() => {
-    if (!measured || introDone.current) return;
+    if (!ready || !bounds || introDone.current) return;
     introDone.current = true;
 
     const head = family.people.find((p) => p.id === family.headId);
-    const fit = (duration: number) => fitView({ padding: 0.15, duration });
+    const fit = (duration: number) => fitBounds(bounds, { padding: 0.15, duration });
     const events = ['pointerdown', 'wheel', 'keydown'] as const;
 
     if (!head || matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -137,7 +149,7 @@ export function Tree({ family, admin, foundId, onMove, onSelect }: Props) {
     // idempotent and detaches its own listeners.
     setTimeout(() => pull(1500), 600);
     for (const ev of events) addEventListener(ev, skip);
-  }, [measured, family, fitView, setCenter]);
+  }, [ready, bounds, family, fitBounds, setCenter]);
 
   const onNodesChange = (changes: NodeChange[]) => {
     if (!onMove) return;
