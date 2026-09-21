@@ -2,3 +2,4 @@ node_modules/
 dist/
 photos-src/
 .claude/
+.msg.tmp
