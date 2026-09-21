@@ -28,7 +28,7 @@ function Portrait({ person }: { person: Person }) {
     return (
       <img
         className="portrait"
-        src={`/photos/${person.id}.webp`}
+        src={`${import.meta.env.BASE_URL}photos/${person.id}.webp`}
         alt={person.name}
         width={64}
         height={64}

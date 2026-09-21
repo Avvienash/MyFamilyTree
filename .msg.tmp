@@ -1,0 +1,12 @@
+Use a relative base so the build works under a Pages project path
+
+base: '/' assumed a custom domain at the domain root. On a GitHub Pages
+project page the site is served from /<repo>/, so every absolute asset
+URL resolved against the domain root and 404'd -- the deploy succeeded
+and served a blank page.
+
+base: './' works in both places, so attaching a custom domain later
+needs no change. The two URLs built at runtime, the data fetch and the
+portrait src, now go through import.meta.env.BASE_URL.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
