@@ -211,7 +211,7 @@ export function Tree({
         nodesDraggable={admin}
         elementsSelectable={admin}
         nodesConnectable={false}
-        snapToGrid={snap}
+        snapToGrid={admin && snap}
         snapGrid={[GRID, GRID]}
         onlyRenderVisibleElements
         panOnDrag
@@ -220,7 +220,8 @@ export function Tree({
         maxZoom={2.5}
         proOptions={{ hideAttribution: true }}
       >
-        {snap && (
+        {admin && snap && (
+          /* an alignment aid for editing: never shown to visitors */
           <Background variant={BackgroundVariant.Dots} gap={GRID} size={1} color="var(--line)" />
         )}
       </ReactFlow>
