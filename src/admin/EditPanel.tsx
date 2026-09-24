@@ -1,10 +1,10 @@
-import type { Family, Person } from '../types';
-import { touching } from '../canvas/deriveUnions';
+import { useState } from 'react';
+import type { Person } from '../types';
 
 type Props = {
   person: Person;
-  family: Family;
   onChange: (person: Person) => void;
+  onPhotoChange: () => void;
   onDelete: () => void;
   onDone: () => void;
 };
@@ -16,45 +16,33 @@ function setStatus(person: Person, status: Person['status']): Person {
   return { ...rest, status: 'alive' };
 }
 
-const label = (family: Family, id: string) => family.people.find((p) => p.id === id)?.name ?? id;
-
 /** Docked right, not over the canvas: you need to see the tree while editing it. */
-export function EditPanel({ person, family, onChange, onDelete, onDone }: Props) {
+export function EditPanel({ person, onChange, onPhotoChange, onDelete, onDone }: Props) {
+  const [uploading, setUploading] = useState(false);
   const set = (patch: Partial<Person>) => onChange({ ...person, ...patch } as Person);
 
-  const confirmDelete = () => {
-    const rels = touching(family.relationships, person.id);
-    const lines = rels.map((r) => {
-      if (r.type === 'marriage')
-        return `  marriage to ${label(family, r.from === person.id ? r.to : r.from)}`;
-      return r.from === person.id
-        ? `  parent of ${label(family, r.to)}`
-        : `  child of ${label(family, r.from)}`;
-    });
-    const detail = rels.length
-      ? `\n\nThis also removes ${rels.length} relationship${rels.length > 1 ? 's' : ''}:\n${lines.join('\n')}`
-      : '';
-    if (confirm(`Delete ${person.name}?${detail}`)) onDelete();
-  };
-
   const upload = async (file: File) => {
-    await fetch(`/api/photo?id=${person.id}`, {
+    setUploading(true);
+    const res = await fetch(`/api/photo?id=${person.id}`, {
       method: 'POST',
       headers: { 'x-filename': file.name },
       body: file,
     });
-    alert('Saved to photos-src/. Run `npm run photos` to publish it.');
+    setUploading(false);
+    if (res.ok) onPhotoChange();
+    else alert('Photo upload failed');
   };
 
   return (
     <div className="edit panel">
-      <h2>Edit person</h2>
+      <h2>{person.name}</h2>
 
       <label>
         Photo
         <input
           type="file"
           accept="image/*"
+          disabled={uploading}
           onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])}
         />
       </label>
@@ -122,7 +110,7 @@ export function EditPanel({ person, family, onChange, onDelete, onDone }: Props)
       </label>
 
       <div className="edit__actions">
-        <button onClick={confirmDelete}>Delete</button>
+        <button onClick={onDelete}>Delete</button>
         <button onClick={onDone}>Done</button>
       </div>
     </div>

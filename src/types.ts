@@ -37,3 +37,6 @@ export const UNION_DROP = CARD_H + 45;
  * sibling bar where it belongs without a custom edge component.
  */
 export const GEN_Y = 2 * UNION_DROP - CARD_H / 2;
+
+/** Drag-snap pitch. Divides the 180px card-to-card spacing evenly. */
+export const GRID = 20;

@@ -1,36 +1,61 @@
 import { useEffect, useMemo, useRef } from 'react';
 import {
+  Background,
+  BackgroundVariant,
   ReactFlow,
   useReactFlow,
   useStore,
-  type BuiltInEdge,
+  type Edge,
   type Node,
   type NodeChange,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
 import type { Family, Person } from '../types';
-import { CARD_H, CARD_W } from '../types';
+import { CARD_H, CARD_W, GRID } from '../types';
 import { deriveUnions, marriages } from './deriveUnions';
+import { MarriageEdge } from './MarriageEdge';
 import { PersonNode } from './PersonNode';
 import { UnionNode } from './UnionNode';
-import { useDetailLevel } from './useDetailLevel';
 
 const nodeTypes = { person: PersonNode, union: UnionNode };
+const edgeTypes = { marriage: MarriageEdge };
 
 const at = (p: Person) => p.position ?? { x: 0, y: 0 };
 
-function build(family: Family, foundId: string | null) {
+/** True when another card sits in the horizontal gap between two partners. */
+function blocked(people: Person[], a: Person, b: Person) {
+  const [l, r] = at(a).x <= at(b).x ? [a, b] : [b, a];
+  const left = at(l).x + CARD_W;
+  const right = at(r).x;
+  const row = (at(l).y + at(r).y) / 2;
+  return people.some(
+    (p) =>
+      p.id !== a.id &&
+      p.id !== b.id &&
+      Math.abs(at(p).y - row) < CARD_H &&
+      at(p).x + CARD_W > left &&
+      at(p).x < right,
+  );
+}
+
+function build(family: Family, foundId: string | null, selected: string[], photoV: number) {
   const byId = new Map(family.people.map((p) => [p.id, p]));
+
   const nodes: Node[] = family.people.map((person) => ({
     id: person.id,
     type: 'person',
     position: at(person),
-    data: { person, highlighted: person.id === foundId },
+    data: {
+      person,
+      highlighted: person.id === foundId,
+      selected: selected.includes(person.id),
+      photoV,
+    },
     width: CARD_W,
     height: CARD_H,
   }));
-  const edges: BuiltInEdge[] = [];
+  const edges: Edge[] = [];
 
   for (const m of marriages(family.relationships)) {
     const a = byId.get(m.from);
@@ -44,7 +69,8 @@ function build(family: Family, foundId: string | null) {
       sourceHandle: 'r',
       target: right.id,
       targetHandle: 'l',
-      type: 'straight',
+      type: 'marriage',
+      data: { detour: blocked(family.people, a, b) },
     });
   }
 
@@ -78,7 +104,7 @@ function build(family: Family, foundId: string | null) {
         targetHandle: 't',
         type: 'smoothstep',
         pathOptions: { borderRadius: 8 },
-      });
+      } as Edge);
     }
   }
 
@@ -89,13 +115,27 @@ type Props = {
   family: Family;
   admin: boolean;
   foundId: string | null;
+  selected?: string[];
+  snap?: boolean;
+  photoV?: number;
   onMove?: (id: string, position: { x: number; y: number }) => void;
   onSelect?: (id: string | null) => void;
 };
 
-export function Tree({ family, admin, foundId, onMove, onSelect }: Props) {
-  const { nodes, edges } = useMemo(() => build(family, foundId), [family, foundId]);
-  const level = useDetailLevel();
+export function Tree({
+  family,
+  admin,
+  foundId,
+  selected = [],
+  snap = false,
+  photoV = 0,
+  onMove,
+  onSelect,
+}: Props) {
+  const { nodes, edges } = useMemo(
+    () => build(family, foundId, selected, photoV),
+    [family, foundId, selected, photoV],
+  );
   const { setCenter, fitBounds } = useReactFlow();
   const introDone = useRef(false);
 
@@ -159,24 +199,31 @@ export function Tree({ family, admin, foundId, onMove, onSelect }: Props) {
   };
 
   return (
-    <div className={`app ${level}`}>
+    <div className="app">
       <ReactFlow
         nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         onNodesChange={onNodesChange}
         onNodeClick={(_, n) => onSelect?.(n.id)}
         onPaneClick={() => onSelect?.(null)}
         nodesDraggable={admin}
         elementsSelectable={admin}
         nodesConnectable={false}
+        snapToGrid={snap}
+        snapGrid={[GRID, GRID]}
         onlyRenderVisibleElements
         panOnDrag
         zoomOnScroll
         minZoom={0.15}
         maxZoom={2.5}
         proOptions={{ hideAttribution: true }}
-      />
+      >
+        {snap && (
+          <Background variant={BackgroundVariant.Dots} gap={GRID} size={1} color="var(--line)" />
+        )}
+      </ReactFlow>
     </div>
   );
 }

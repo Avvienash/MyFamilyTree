@@ -70,6 +70,13 @@ body {
   animation: found-fade 0.6s 2s forwards;
 }
 
+.card--selected {
+  border-color: var(--ink);
+  box-shadow:
+    0 0 0 2px var(--ink),
+    0 2px 10px rgb(46 58 54 / 18%);
+}
+
 @keyframes found-fade {
   to {
     outline-color: transparent;
@@ -110,31 +117,6 @@ body {
   font-size: 12px;
   color: var(--ink-muted);
   margin-top: 4px;
-}
-
-/* the 16px disc shown at `far`, standing in for the whole card */
-.card__disc {
-  display: none;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--line);
-}
-
-.far .card {
-  border-color: transparent;
-  background: none;
-  padding: 0;
-  justify-content: center;
-}
-
-.far .card__disc {
-  display: block;
-}
-
-.far .portrait,
-.far .card__body {
-  display: none;
 }
 
 /* ─── connectors ───────────────────────────────────────────────────── */
@@ -311,7 +293,7 @@ button[disabled] {
   }
 }
 
-/* ─── admin ────────────────────────────────────────────────────────── */
+/* ─── admin ───────────────────────────────────────────────────────── */
 
 .toolbar {
   position: fixed;
@@ -323,23 +305,72 @@ button[disabled] {
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
+  white-space: nowrap;
 }
 
-.toolbar__status {
+.toolbar button,
+.link-bar button {
+  white-space: nowrap;
+}
+
+.toolbar__sep {
+  width: 1px;
+  align-self: stretch;
+  background: var(--line);
+  opacity: 0.4;
+  margin: 0 2px;
+}
+
+.status {
   color: var(--ink-muted);
-  margin-right: 6px;
+  font-variant-numeric: tabular-nums;
 }
 
-.hint {
+.status--dirty {
+  color: var(--ink);
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink-muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+.hint,
+.link-bar {
   position: fixed;
-  top: 76px;
+  top: 72px;
   left: 50%;
   translate: -50% 0;
   z-index: 6;
-  padding: 7px 12px;
-  color: var(--ink-muted);
-  /* it floats over the canvas while picking: it must never eat a node click */
+  padding: 8px 12px;
+  white-space: nowrap;
+  /* they float over the canvas: never eat a click meant for a card */
   pointer-events: none;
+}
+
+.hint {
+  color: var(--ink-muted);
+}
+
+.link-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.link-bar__who {
+  color: var(--ink-muted);
+  margin-right: 2px;
+}
+
+.link-bar strong {
+  font-weight: 400;
+  color: var(--ink);
 }
 
 .edit {

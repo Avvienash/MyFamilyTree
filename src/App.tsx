@@ -9,13 +9,13 @@ import { ListView } from './ListView';
 // tree-shaken out of the production bundle: the boundary is statically false
 const Admin = import.meta.env.DEV ? lazy(() => import('./admin/Admin')) : null;
 
-export type Click = { id: string | null; n: number };
-
 function Shell({ initial }: { initial: Family }) {
   const [family, setFamily] = useState(initial);
   const [foundId, setFoundId] = useState<string | null>(null);
   const [listView, setListView] = useState(false);
-  const [click, setClick] = useState<Click>({ id: null, n: 0 });
+  const [selected, setSelected] = useState<string[]>([]);
+  const [snap, setSnap] = useState(true);
+  const [photoV, setPhotoV] = useState(0);
   useKeyboardViewport();
 
   const move = (id: string, position: { x: number; y: number }) =>
@@ -23,6 +23,15 @@ function Shell({ initial }: { initial: Family }) {
       ...f,
       people: f.people.map((p) => (p.id === id ? { ...p, position } : p)),
     }));
+
+  // clicking cycles the selection: first picks, second pairs, third starts over
+  const pick = (id: string | null) => {
+    if (!Admin) return;
+    if (!id) return setSelected([]);
+    setSelected((s) =>
+      s.includes(id) ? s.filter((x) => x !== id) : s.length >= 2 ? [id] : [...s, id],
+    );
+  };
 
   return (
     <>
@@ -32,8 +41,11 @@ function Shell({ initial }: { initial: Family }) {
         family={family}
         admin={!!Admin}
         foundId={foundId}
+        selected={selected}
+        snap={snap}
+        photoV={photoV}
         onMove={Admin ? move : undefined}
-        onSelect={(id) => setClick((c) => ({ id, n: c.n + 1 }))}
+        onSelect={pick}
       />
 
       <Search family={family} onFound={setFoundId} />
@@ -45,7 +57,15 @@ function Shell({ initial }: { initial: Family }) {
 
       {Admin && (
         <Suspense fallback={null}>
-          <Admin family={family} setFamily={setFamily} click={click} />
+          <Admin
+            family={family}
+            setFamily={setFamily}
+            selected={selected}
+            setSelected={setSelected}
+            snap={snap}
+            setSnap={setSnap}
+            onPhotoChange={() => setPhotoV((v) => v + 1)}
+          />
         </Suspense>
       )}
     </>

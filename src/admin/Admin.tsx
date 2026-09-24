@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useReactFlow } from '@xyflow/react';
 import type { Family, Person, Relationship } from '../types';
-import type { Click } from '../App';
+import { touching } from '../canvas/deriveUnions';
 import { EditPanel } from './EditPanel';
 import { tidy } from './tidy';
 import { place } from './placement';
@@ -9,7 +9,11 @@ import { place } from './placement';
 type Props = {
   family: Family;
   setFamily: (update: (f: Family) => Family) => void;
-  click: Click;
+  selected: string[];
+  setSelected: (ids: string[]) => void;
+  snap: boolean;
+  setSnap: (on: boolean) => void;
+  onPhotoChange: () => void;
 };
 
 const nextId = (used: Set<string>, prefix: string) => {
@@ -19,46 +23,23 @@ const nextId = (used: Set<string>, prefix: string) => {
   }
 };
 
-export default function Admin({ family, setFamily, click }: Props) {
-  const [selected, setSelected] = useState<string | null>(null);
-  const [pick, setPick] = useState<string[] | null>(null);
+export default function Admin({
+  family,
+  setFamily,
+  selected,
+  setSelected,
+  snap,
+  setSnap,
+  onPhotoChange,
+}: Props) {
   const [dirty, setDirty] = useState(false);
+  const [saving, setSaving] = useState<'idle' | 'saving' | 'failed'>('idle');
   const { screenToFlowPosition } = useReactFlow();
-  const seen = useRef(click.n);
 
   const edit = (update: (f: Family) => Family) => {
     setFamily(update);
     setDirty(true);
   };
-
-  // node clicks either pick relationship endpoints or open the edit panel
-  useEffect(() => {
-    if (click.n === seen.current) return;
-    seen.current = click.n;
-
-    if (!pick) {
-      setSelected(click.id);
-      return;
-    }
-    if (!click.id) return setPick([]);
-
-    const next = [...pick, click.id];
-    if (next.length < 2) return setPick(next);
-
-    const [from, to] = next as [string, string];
-    setPick(null);
-    if (from === to) return;
-    const type = confirm(`OK = marriage\nCancel = ${from} is parent of ${to}`)
-      ? 'marriage'
-      : 'parent';
-    const rel: Relationship = {
-      id: nextId(new Set(family.relationships.map((r) => r.id)), type === 'marriage' ? 'm' : 'r'),
-      from,
-      to,
-      type,
-    };
-    edit((f) => ({ ...f, relationships: [...f.relationships, rel] }));
-  }, [click]);
 
   useEffect(() => {
     const guard = (e: BeforeUnloadEvent) => dirty && e.preventDefault();
@@ -66,68 +47,121 @@ export default function Admin({ family, setFamily, click }: Props) {
     return () => removeEventListener('beforeunload', guard);
   }, [dirty]);
 
+  const person = (id: string) => family.people.find((p) => p.id === id);
+  const name = (id: string) => person(id)?.name ?? id;
+
   const addPerson = () => {
     const id = nextId(new Set(family.people.map((p) => p.id)), 'p');
     const centre = screenToFlowPosition({ x: innerWidth / 2, y: innerHeight / 2 });
-    const person: Person = { id, name: 'New person', status: 'alive' };
-    edit((f) => ({ ...f, people: [...f.people, { ...person, position: place(f, null, centre) }] }));
-    setSelected(id);
+    const fresh: Person = { id, name: 'New person', status: 'alive' };
+    edit((f) => ({ ...f, people: [...f.people, { ...fresh, position: place(f, null, centre) }] }));
+    setSelected([id]);
   };
 
-  const runTidy = () => {
-    if (!confirm('Tidy discards every manual position. Continue?')) return;
-    edit((f) => ({ ...f, people: tidy(f) }));
+  const relate = (from: string, to: string, type: Relationship['type']) => {
+    const id = nextId(
+      new Set(family.relationships.map((r) => r.id)),
+      type === 'marriage' ? 'm' : 'r',
+    );
+    edit((f) => ({ ...f, relationships: [...f.relationships, { id, from, to, type }] }));
+    setSelected([]);
   };
 
   const remove = (id: string) => {
+    const rels = touching(family.relationships, id);
+    const detail = rels.length
+      ? `\n\nThis also removes ${rels.length} relationship${rels.length > 1 ? 's' : ''}:\n` +
+        rels
+          .map((r) =>
+            r.type === 'marriage'
+              ? `  marriage to ${name(r.from === id ? r.to : r.from)}`
+              : r.from === id
+                ? `  parent of ${name(r.to)}`
+                : `  child of ${name(r.from)}`,
+          )
+          .join('\n')
+      : '';
+    if (!confirm(`Delete ${name(id)}?${detail}`)) return;
     edit((f) => ({
       ...f,
       people: f.people.filter((p) => p.id !== id),
       relationships: f.relationships.filter((r) => r.from !== id && r.to !== id),
     }));
-    setSelected(null);
+    setSelected([]);
+  };
+
+  const runTidy = () => {
+    if (!confirm('Tidy rearranges everyone and discards positions you set by hand. Continue?')) return;
+    edit((f) => ({ ...f, people: tidy(f) }));
   };
 
   const save = async () => {
-    const res = await fetch('/api/save', { method: 'POST', body: JSON.stringify(family) });
-    if (res.ok) setDirty(false);
-    else alert('Save failed');
+    setSaving('saving');
+    try {
+      const res = await fetch('/api/save', { method: 'POST', body: JSON.stringify(family) });
+      if (!res.ok) throw new Error();
+      setDirty(false);
+      setSaving('idle');
+    } catch {
+      setSaving('failed');
+    }
   };
 
-  const person = family.people.find((p) => p.id === selected);
+  const [a, b] = selected;
+  const one = selected.length === 1 ? person(selected[0]!) : undefined;
 
   return (
     <>
       <div className="toolbar panel">
-        <span className="toolbar__status">Admin · {dirty ? 'Unsaved' : 'Saved'}</span>
-        <button onClick={addPerson}>+ Person</button>
-        <button onClick={() => setPick(pick ? null : [])}>
-          {pick ? 'Cancel' : '+ Relationship'}
-        </button>
+        <button onClick={addPerson}>Add person</button>
         <button onClick={runTidy}>Tidy</button>
-        <button onClick={save} disabled={!dirty}>
+        <label className="toggle">
+          <input type="checkbox" checked={snap} onChange={(e) => setSnap(e.target.checked)} />
+          Snap to grid
+        </label>
+        <span className="toolbar__sep" />
+        <span className={`status status--${dirty ? 'dirty' : 'clean'}`}>
+          {saving === 'failed'
+            ? 'Save failed'
+            : saving === 'saving'
+              ? 'Saving…'
+              : dirty
+                ? 'Unsaved changes'
+                : 'Saved to disk'}
+        </span>
+        <button onClick={save} disabled={!dirty || saving === 'saving'}>
           Save
         </button>
       </div>
 
-      {pick && (
-        <div className="hint panel">
-          Click two people. The first is the parent.{pick.length ? ' One selected.' : ''}
+      {selected.length === 0 && (
+        <div className="hint panel">Click a person to edit. Click a second to link them.</div>
+      )}
+
+      {a && b && (
+        <div className="link-bar panel">
+          <div className="link-bar__who">
+            <strong>{name(a)}</strong> and <strong>{name(b)}</strong>
+          </div>
+          <button onClick={() => relate(a, b, 'marriage')}>Marriage</button>
+          <button onClick={() => relate(a, b, 'parent')}>{name(a)} is the parent</button>
+          <button onClick={() => relate(b, a, 'parent')}>{name(b)} is the parent</button>
+          <button onClick={() => setSelected([])}>Clear</button>
         </div>
       )}
 
-      {person && !pick && (
+      {one && (
         <EditPanel
-          person={person}
-          family={family}
+          person={one}
           onChange={(updated) =>
             edit((f) => ({
               ...f,
               people: f.people.map((p) => (p.id === updated.id ? updated : p)),
             }))
           }
-          onDelete={() => remove(person.id)}
-          onDone={() => setSelected(null)}
+          onPhotoChange={onPhotoChange}
+          onDelete={() => remove(one.id)}
+          onDone={() => setSelected([])}
         />
       )}
     </>

@@ -4,7 +4,7 @@ import type { Person } from '../types';
 import { avatar, initials } from '../lib/avatar';
 import { dateLine } from '../lib/dates';
 
-export type PersonNodeData = { person: Person; highlighted: boolean };
+export type PersonNodeData = { person: Person; highlighted: boolean; selected: boolean; photoV: number };
 export type PersonNodeType = Node<PersonNodeData, 'person'>;
 
 // A node with more than one handle of a type must name them, or React Flow
@@ -19,7 +19,7 @@ const handles = (
   </>
 );
 
-function Portrait({ person }: { person: Person }) {
+function Portrait({ person, photoV }: { person: Person; photoV: number }) {
   const [failed, setFailed] = useState(false);
 
   if (person.unknown) return <div className="portrait portrait--blank">?</div>;
@@ -28,7 +28,7 @@ function Portrait({ person }: { person: Person }) {
     return (
       <img
         className="portrait"
-        src={`${import.meta.env.BASE_URL}photos/${person.id}.webp`}
+        src={`${import.meta.env.BASE_URL}photos/${person.id}.webp${photoV ? `?v=${photoV}` : ''}`}
         alt={person.name}
         width={64}
         height={64}
@@ -51,7 +51,7 @@ function Portrait({ person }: { person: Person }) {
 }
 
 function PersonNodeInner({ data }: NodeProps<PersonNodeType>) {
-  const { person, highlighted } = data;
+  const { person, highlighted, selected, photoV } = data;
   const dates = dateLine(person);
 
   return (
@@ -61,13 +61,13 @@ function PersonNodeInner({ data }: NodeProps<PersonNodeType>) {
         person.status === 'dead' && 'card--dead',
         person.unknown && 'card--unknown',
         highlighted && 'card--found',
+        selected && 'card--selected',
       ]
         .filter(Boolean)
         .join(' ')}
     >
       {handles}
-      <div className="card__disc" aria-hidden />
-      <Portrait person={person} />
+      <Portrait key={photoV} person={person} photoV={photoV} />
       <figcaption className="card__body">
         <div className="card__name">{person.unknown ? 'Unknown' : person.name}</div>
         {dates && <div className="card__dates">{dates}</div>}

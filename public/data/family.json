@@ -34,7 +34,7 @@
       "birthYear": 1948,
       "deathYear": 2019,
       "position": {
-        "x": -450,
+        "x": -540,
         "y": 660
       }
     },
@@ -45,7 +45,7 @@
       "status": "alive",
       "birthYear": 1951,
       "position": {
-        "x": 270,
+        "x": 180,
         "y": 660
       }
     },
@@ -57,7 +57,7 @@
       "birthYear": 1953,
       "deathYear": 2009,
       "position": {
-        "x": 630,
+        "x": 540,
         "y": 660
       }
     },
@@ -68,7 +68,7 @@
       "status": "alive",
       "birthYear": 1952,
       "position": {
-        "x": -270,
+        "x": -360,
         "y": 660
       }
     },
@@ -79,7 +79,7 @@
       "status": "alive",
       "birthYear": 1975,
       "position": {
-        "x": -450,
+        "x": -540,
         "y": 990
       }
     },
@@ -90,7 +90,7 @@
       "status": "alive",
       "birthYear": 1978,
       "position": {
-        "x": -270,
+        "x": -360,
         "y": 990
       }
     },
@@ -101,7 +101,7 @@
       "status": "alive",
       "birthYear": 1949,
       "position": {
-        "x": 90,
+        "x": 0,
         "y": 660
       }
     },
@@ -112,7 +112,7 @@
       "status": "alive",
       "birthYear": 1980,
       "position": {
-        "x": 180,
+        "x": 90,
         "y": 990
       }
     },
@@ -124,7 +124,7 @@
       "birthYear": 1957,
       "deathYear": 2015,
       "position": {
-        "x": 450,
+        "x": 360,
         "y": 660
       }
     },
@@ -135,7 +135,7 @@
       "status": "alive",
       "birthYear": 1985,
       "position": {
-        "x": 540,
+        "x": 450,
         "y": 990
       }
     },
@@ -146,7 +146,7 @@
       "status": "alive",
       "birthYear": 1990,
       "position": {
-        "x": 720,
+        "x": 630,
         "y": 990
       }
     },
@@ -156,7 +156,7 @@
       "status": "dead",
       "unknown": true,
       "position": {
-        "x": 810,
+        "x": 720,
         "y": 660
       }
     },
@@ -167,7 +167,7 @@
       "status": "alive",
       "birthYear": 1974,
       "position": {
-        "x": -630,
+        "x": -720,
         "y": 990
       }
     },
@@ -178,7 +178,7 @@
       "status": "alive",
       "birthYear": 2004,
       "position": {
-        "x": -630,
+        "x": -720,
         "y": 1320
       }
     },
@@ -189,7 +189,7 @@
       "status": "alive",
       "birthYear": 2007,
       "position": {
-        "x": -450,
+        "x": -540,
         "y": 1320
       }
     },
@@ -200,7 +200,7 @@
       "status": "alive",
       "birthYear": 1981,
       "position": {
-        "x": -90,
+        "x": -180,
         "y": 990
       }
     },
@@ -211,7 +211,7 @@
       "status": "alive",
       "birthYear": 2012,
       "position": {
-        "x": -180,
+        "x": -270,
         "y": 1320
       }
     },
@@ -225,6 +225,40 @@
       "position": {
         "x": 90,
         "y": 0
+      }
+    },
+    {
+      "id": "p021",
+      "name": "Rokiah binti Omar",
+      "gender": "female",
+      "status": "alive",
+      "birthYear": 1962,
+      "position": {
+        "x": 900,
+        "y": 660
+      }
+    },
+    {
+      "id": "p022",
+      "name": "Zulkifli bin Kassim",
+      "gender": "male",
+      "status": "dead",
+      "birthYear": 1950,
+      "deathYear": 2022,
+      "position": {
+        "x": 1160,
+        "y": 660
+      }
+    },
+    {
+      "id": "p023",
+      "name": "Amir bin Rahim",
+      "gender": "male",
+      "status": "alive",
+      "birthYear": 1995,
+      "position": {
+        "x": 810,
+        "y": 990
       }
     }
   ],
@@ -401,6 +435,36 @@
       "id": "r23",
       "from": "p020",
       "to": "p001",
+      "type": "parent"
+    },
+    {
+      "id": "m7",
+      "from": "p005",
+      "to": "p014",
+      "type": "marriage"
+    },
+    {
+      "id": "m8",
+      "from": "p005",
+      "to": "p021",
+      "type": "marriage"
+    },
+    {
+      "id": "m9",
+      "from": "p011",
+      "to": "p022",
+      "type": "marriage"
+    },
+    {
+      "id": "r24",
+      "from": "p005",
+      "to": "p023",
+      "type": "parent"
+    },
+    {
+      "id": "r25",
+      "from": "p021",
+      "to": "p023",
       "type": "parent"
     }
   ]
